@@ -18,8 +18,8 @@ typedef struct{
 }registro_t;
 
 int importar();
-void busca(int inscricao registro_t* registro);
+void busca(int inscricao, registro_t* registro);
 int insere(registro_t registro);
-int remove(int inscricao);
+int removeRegistro(int inscricao);
 
 #endif /* ORD_H */
