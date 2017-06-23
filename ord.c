@@ -54,8 +54,8 @@ int importar(){
 
             switch (field_count % 4) {
                 case 0:
-                    (*registro).inscricao = atoi(reg);
-                    reg_size = reg_size + sizeof(int);
+                    (*registro).inscricao = reg_s;
+                    reg_size = reg_size + field_size;
                     break;
 
                 case 1:
@@ -69,8 +69,8 @@ int importar(){
                     break;
 
                 case 3:
-                    (*registro).score = strtod(reg_s, NULL);
-                    reg_size = reg_size + sizeof(double);
+                    (*registro).score = reg_s;
+                    reg_size = reg_size + field_size;
                     (*registro).tam = reg_size;
 
                     insere(registro);
@@ -97,11 +97,11 @@ void busca(int inscricao, registro_t* registro){
 
 int insere(registro_t* registro){
     printf("----------------------------------------\n");
-    printf("Tamanho: %d\n", (*registro).tam);
-    printf("Inscrição: %d\n", (*registro).inscricao);
+    printf("Tamanho: %d \n", (*registro).tam);
+    printf("Inscrição: %s\n", (*registro).inscricao);
     printf("Nome: %s\n", (*registro).nome);
     printf("Curso: %s\n", (*registro).curso);
-    printf("Score: %f\n", (*registro).score);
+    printf("Score: %s\n", (*registro).score);
     return TRUE;
 }
 
