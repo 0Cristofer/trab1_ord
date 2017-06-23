@@ -11,10 +11,11 @@
 #define DATA_FILE "dados-inline.txt"
 
 typedef struct{
-  long inscricao;
+  int tam;
+  int inscricao;
   char* nome;
   char* curso;
-  int socre;
+  int score;
 }registro_t;
 
 int importar();

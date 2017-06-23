@@ -15,6 +15,7 @@ int importar(){
 }
 
 void busca(int inscricao, registro_t* registro){
+    printf("%d", inscricao);
 }
 
 int insere(registro_t registro){
