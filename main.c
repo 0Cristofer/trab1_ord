@@ -4,6 +4,8 @@
    Autores: Bruno Cesar, Cristofer Oswald */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "ord.h"
 
@@ -42,18 +44,123 @@ void ajuda(){
 
     getchar();
     char aux[10];
-    fflush(stdin);
-    fflush(stdout);
     fgets(aux, 100, stdin);
+}
+
+int iImportar(){
+    system("clear");
+    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf("\n----------- Importar -----------\n");
+
+    printf(" Esta operação irá resetar o arquivo de dados!\n Você tem certeza? (0/1) ");
+
+    unsigned int opt = 0;
+    do{
+        scanf("%d",&opt);
+
+        if(opt > 1){
+            printf("Erro, digite apenas 0 ou 1\n");
+        }
+    } while(opt > 1);
+
+    return opt;
+}
+
+int iBuscar(){
+    system("clear");
+    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf("\n----------- Buscar registro -----------\n");
+
+    unsigned int inscricao;
+
+    printf(" Insira o número de inscrição para busca: ");
+    scanf("%d", &inscricao);
+    return inscricao;
+}
+
+/**
+* Trimma a string para o tamanho minimo.
+**/
+int trimString(char** string){
+    int size;
+    char *aux;
+
+    size = strlen(*string);
+    aux = malloc(size);
+    aux = strndup(*string, size);
+
+    free(*string);
+    *string = malloc(size);
+    *string = strdup(aux);
+
+    return size;
+}
+
+void iCadastrar(registro_t* registro){
+    system("clear");
+    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf("\n----------- Cadastrar novo registro -----------\n");
+
+    int tam = 0;
+    int inscricao;
+    float score;
+    char* nome;
+    char* curso;
+
+    nome = malloc(sizeof(char) * 100);
+    curso = malloc(sizeof(char) * 100);
+
+    printf("Número de inscrição: ");
+    scanf("%d",&inscricao);
+    tam += 4;
+
+    printf("Nome: ");
+    scanf(" %[^\n]", nome);
+    tam += trimString(&nome);
+
+    printf("Curso: ");
+    scanf(" %[^\n]", curso);
+    tam += trimString(&curso);
+
+    printf("Score: ");
+    scanf("%f",&score);
+    tam += 4;
+
+    registro->inscricao = inscricao;
+    registro->nome = nome;
+    registro->curso = curso;
+    registro->score = score;
 }
 
 int main(){
     int opt;
+    int opt2;
+    unsigned int inscricao;
+
+    registro_t* registro;
+    registro = malloc(sizeof(registro_t));
+
     do {
         menuPrincipal();
         scanf("%d", &opt);
 
         switch(opt){
+            case 1:
+                opt2 = iImportar();
+                if(opt2){
+                    importar();
+                }
+                break;
+
+            case 3:
+                iCadastrar(registro);
+                break;
+
+            case 2:
+                inscricao = iBuscar();
+                busca(inscricao,registro);
+                break;
+
             case 5:
                 ajuda();
                 break;
