@@ -9,17 +9,20 @@
 #define TRUE 1
 
 #define DATA_FILE "dados-inline.txt"
+#define REG_FILE "registros.dat"
+#define PIPE '|'
 
 typedef struct{
-  long inscricao;
+  int tam;
+  int inscricao;
   char* nome;
   char* curso;
-  int socre;
+  double score;
 }registro_t;
 
 int importar();
 void busca(int inscricao, registro_t* registro);
-int insere(registro_t registro);
+int insere(registro_t* registro);
 int removeRegistro(int inscricao);
 
 #endif /* ORD_H */
