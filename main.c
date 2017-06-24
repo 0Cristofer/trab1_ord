@@ -11,7 +11,7 @@
 
 void menuPrincipal(){
     system("clear");
-    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf(HEADER);
     printf("\n----------- Menu princpal -----------\n");
 
     printf("  1 - Importar de %s\n", DATA_FILE);
@@ -27,7 +27,7 @@ void menuPrincipal(){
 
 void ajuda(){
     system("clear");
-    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf(HEADER);
     printf("\n----------- Ajuda -----------\n");
 
     printf("\n 1 - Importar de <ENTRADA> :\n  Importa os dados da entrada e substitui o arquivo de dados. Reseta o sistema.\n");
@@ -49,7 +49,7 @@ void ajuda(){
 
 int iImportar(){
     system("clear");
-    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf(HEADER);
     printf("\n----------- Importar -----------\n");
 
     printf(" Esta operação irá resetar o arquivo de dados!\n Você tem certeza? (0/1) ");
@@ -68,7 +68,7 @@ int iImportar(){
 
 int iBuscar(){
     system("clear");
-    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf(HEADER);
     printf("\n----------- Buscar registro -----------\n");
 
     unsigned int inscricao;
@@ -98,21 +98,23 @@ int trimString(char** string){
 
 void iCadastrar(registro_t* registro){
     system("clear");
-    printf("=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n");
+    printf(HEADER);
     printf("\n----------- Cadastrar novo registro -----------\n");
 
     int tam = 0;
-    int inscricao;
-    float score;
+    char* inscricao;
+    char* score;
     char* nome;
     char* curso;
 
+    inscricao = malloc(sizeof(char) * 100);
     nome = malloc(sizeof(char) * 100);
     curso = malloc(sizeof(char) * 100);
+    score = malloc(sizeof(char) * 100);
 
     printf("Número de inscrição: ");
-    scanf("%d",&inscricao);
-    tam += 4;
+    scanf("  %[^\n]",inscricao);
+    tam += trimString(&inscricao);
 
     printf("Nome: ");
     scanf(" %[^\n]", nome);
@@ -123,9 +125,10 @@ void iCadastrar(registro_t* registro){
     tam += trimString(&curso);
 
     printf("Score: ");
-    scanf("%d",&score);
-    tam += 4;
+    scanf("  %[^\n]", score);
+    tam += trimString(&score);
 
+    registro->tam = tam;
     registro->inscricao = inscricao;
     registro->nome = nome;
     registro->curso = curso;
@@ -139,7 +142,6 @@ int main(){
     unsigned int inscricao;
 
     registro_t* registro;
-    registro = malloc(sizeof(registro_t));
 
     do {
         menuPrincipal();
@@ -153,13 +155,18 @@ int main(){
                 }
                 break;
 
-            case 3:
-                iCadastrar(registro);
-                break;
-
             case 2:
                 inscricao = iBuscar();
-                busca(inscricao,registro);
+                busca(inscricao, registro);
+                break;
+
+            case 3:
+                registro = malloc(sizeof(registro_t));
+                iCadastrar(registro);
+                insere(registro);
+                break;
+
+            case 4:
                 break;
 
             case 5:

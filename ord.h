@@ -9,18 +9,21 @@
 #define TRUE 1
 
 #define DATA_FILE "dados-inline.txt"
+#define REG_FILE "registros.dat"
+#define PIPE '|'
+#define HEADER "=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n"
 
 typedef struct{
   int tam;
-  int inscricao;
+  char* inscricao;
   char* nome;
   char* curso;
-  int score;
+  char* score;
 }registro_t;
 
 int importar();
 void busca(int inscricao, registro_t* registro);
-int insere(registro_t registro);
+int insere(registro_t* registro);
 int removeRegistro(int inscricao);
 
 #endif /* ORD_H */
