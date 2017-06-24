@@ -123,13 +123,14 @@ void iCadastrar(registro_t* registro){
     tam += trimString(&curso);
 
     printf("Score: ");
-    scanf("%f",&score);
+    scanf("%d",&score);
     tam += 4;
 
     registro->inscricao = inscricao;
     registro->nome = nome;
     registro->curso = curso;
-    registro->score = score;
+    registro->score =
+
 }
 
 int main(){
