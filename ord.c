@@ -159,7 +159,6 @@ int insere(registro_t* registro){
     if(getLED() == -1){
         fseek(reg_file, 0, SEEK_END);
         fwrite(&(registro->tam), sizeof(short), 1, reg_file);
-        fputs(PIPE_STR, reg_file);
         fputs(registro->inscricao, reg_file);
         fputs(PIPE_STR, reg_file);
         fputs(registro->nome, reg_file);
@@ -167,6 +166,9 @@ int insere(registro_t* registro){
         fputs(registro->curso, reg_file);
         fputs(PIPE_STR, reg_file);
         fputs(registro->score, reg_file);
+        fputs(PIPE_STR, reg_file);
+    }else{
+        //Procurar espaço na LED
     }
 
     registro->tam = registro->tam - 4; //Remove os pipes
