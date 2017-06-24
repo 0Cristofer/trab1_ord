@@ -9,6 +9,14 @@
 void menuPrincipal(){
     system("clear");
     printf(HEADER);
+
+    if(reg_file != NULL){
+        printf("\n\t\t   Arquivo de registros existente!\n");
+    }
+    else{
+        printf("\n\t\t   Arquivo de registros inexistente!\n");
+    }
+
     printf("\n----------- Menu princpal -----------\n");
 
     printf("  1 - Importar de %s\n", DATA_FILE);
@@ -140,6 +148,7 @@ int main(){
     registro_t* registro;
     char* inscricao;
 
+    abreRegistro();
 
     do {
         inscricao = malloc(sizeof(char) * 10);
@@ -156,7 +165,7 @@ int main(){
 
             case 2:
                 iBuscar(inscricao);
-                busca(inscricao, &registro, &ponteiro_reg_file);
+                busca(inscricao, &registro);
                 break;
 
             case 3:
@@ -168,7 +177,7 @@ int main(){
                 opt2 = 0;
                 do{
                     iRemover1(inscricao);
-                    busca(inscricao, &registro, &ponteiro_reg_file);
+                    busca(inscricao, &registro);
 
                     if(registro == NULL){
                         printf("Registro %s não encontrado!\nDeseja procurar novamente? (0/1)", inscricao);
@@ -198,6 +207,7 @@ int main(){
     } while (opt > 0 );
 
     printf("Saindo...\n");
+    salvaRegistro(FALSE);
 
     return 0;
 
