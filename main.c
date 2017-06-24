@@ -3,11 +3,8 @@
    Data: 23/06/2017
    Autores: Bruno Cesar, Cristofer Oswald */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "ord.h"
+#include "utils.h"
 
 void menuPrincipal(){
     system("clear");
@@ -47,6 +44,7 @@ void ajuda(){
     fgets(aux, 100, stdin);
 }
 
+
 int iImportar(){
     system("clear");
     printf(HEADER);
@@ -54,49 +52,22 @@ int iImportar(){
 
     printf(" Esta operação irá resetar o arquivo de dados!\n Você tem certeza? (0/1) ");
 
-    unsigned int opt = 0;
-    do{
-        scanf("%d",&opt);
-
-        if(opt > 1){
-            printf("Erro, digite apenas 0 ou 1\n");
-        }
-    } while(opt > 1);
+    unsigned int opt = iConfirmar();
 
     return opt;
 }
 
-int iBuscar(){
+void iBuscar(char* inscricao){
     system("clear");
     printf(HEADER);
     printf("\n----------- Buscar registro -----------\n");
 
-    unsigned int inscricao;
-
-    printf(" Insira o número de inscrição para busca: ");
-    scanf("%d", &inscricao);
-    return inscricao;
+    printf(" Insira o número da inscrição para busca: ");
+    scanf(" %[^\n]", inscricao);
+    trimString(&inscricao);
 }
 
-/**
-* Trimma a string para o tamanho minimo.
-**/
-int trimString(char** string){
-    int size;
-    char *aux;
-
-    size = strlen(*string);
-    aux = malloc(size);
-    aux = strndup(*string, size);
-
-    free(*string);
-    *string = malloc(size);
-    *string = strdup(aux);
-
-    return size;
-}
-
-void iCadastrar(registro_t* registro){
+void iCadastrar(registro_t** registro){
     system("clear");
     printf(HEADER);
     printf("\n----------- Cadastrar novo registro -----------\n");
@@ -112,7 +83,7 @@ void iCadastrar(registro_t* registro){
     curso = malloc(sizeof(char) * 100);
     score = malloc(sizeof(char) * 100);
 
-    printf("Número de inscrição: ");
+    printf("Número da inscrição: ");
     scanf("  %[^\n]",inscricao);
     tam += trimString(&inscricao);
 
@@ -128,45 +99,90 @@ void iCadastrar(registro_t* registro){
     scanf("  %[^\n]", score);
     tam += trimString(&score);
 
-    registro->tam = tam;
-    registro->inscricao = inscricao;
-    registro->nome = nome;
-    registro->curso = curso;
-    registro->score =
+    *registro = malloc(sizeof(registro_t));
+    (*registro)->tam = tam;
+    (*registro)->inscricao = inscricao;
+    (*registro)->nome = nome;
+    (*registro)->curso = curso;
+    (*registro)->score = score;
+}
+
+void iRemover1(char* inscricao){
+    system("clear");
+    printf(HEADER);
+    printf("\n-------------- Remoção de registros --------------\n");
+
+    printf("Para remover um registro, primeiro insira seu número de inscrição.\n ATENÇÃO: Esta ação é permanente.\n");
+
+    printf("\nNúmero da inscrição: ");
+    scanf(" %[^\n]", inscricao);
+    trimString(&inscricao);
+}
+
+unsigned int iRemover2(registro_t* registro){
+    system("clear");
+    printf(HEADER);
+    printf("\n-------------- Remoção de registros --------------\n");
+
+    printf("\nRegistro encontrado!\n\n");
+
+    registroToString(registro);
+
+    printf("\nVocê tem certeza que deseja remover este registro? (0/1)\n ATENÇÃO: Esta ação é permanente.\n");
+
+    unsigned int opt = iConfirmar();
 
 }
 
 int main(){
-    int opt;
-    int opt2;
-    unsigned int inscricao;
+    unsigned int opt, opt2;
 
     registro_t* registro;
+    char* inscricao;
+
 
     do {
+        inscricao = malloc(sizeof(char) * 10);
+
         menuPrincipal();
         scanf("%d", &opt);
 
         switch(opt){
             case 1:
-                opt2 = iImportar();
-                if(opt2){
+                if(iImportar()){
                     importar();
                 }
                 break;
 
             case 2:
-                inscricao = iBuscar();
-                busca(inscricao, registro);
+                iBuscar(inscricao);
+                busca(inscricao, &registro, &ponteiro_reg_file);
                 break;
 
             case 3:
-                registro = malloc(sizeof(registro_t));
-                iCadastrar(registro);
+                iCadastrar(&registro);
                 insere(registro);
                 break;
 
             case 4:
+                opt2 = 0;
+                do{
+                    iRemover1(inscricao);
+                    busca(inscricao, &registro, &ponteiro_reg_file);
+
+                    if(registro == NULL){
+                        printf("Registro %s não encontrado!\nDeseja procurar novamente? (0/1)", inscricao);
+                        opt2 = iConfirmar();
+
+                    }
+                } while(registro == NULL || opt2 == 1);
+
+                if(registro != NULL){
+                    if(iRemover2(registro)){
+                        removeRegistro(inscricao);
+                    }
+                }
+
                 break;
 
             case 5:
@@ -176,7 +192,11 @@ int main(){
             default:
                 break;
         }
+
+        free(inscricao);
+
     } while (opt > 0 );
+
     printf("Saindo...\n");
 
     return 0;

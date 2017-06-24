@@ -4,17 +4,13 @@
    Data: 23/06/2017
    Autores: Bruno Cesar, Cristofer Oswald */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "ord.h"
-
+#include "utils.h"
 
 int importar(){
     FILE* data_file;
 
     if((data_file = fopen(DATA_FILE, "rb")) != NULL){
-        FILE* reg_file;
         registro_t* registro;
         int led = -1;
         int field_count = 0;
@@ -26,7 +22,7 @@ int importar(){
         char c;
 
         if((reg_file = fopen(REG_FILE, "wb")) == NULL){
-            return FALSE;
+            errorLauncher(1);
         }
 
         fwrite(&led, sizeof(int), 1, reg_file);
@@ -91,20 +87,23 @@ int importar(){
     return FALSE;
 }
 
-void busca(int inscricao, registro_t* registro){
-    printf("%d", inscricao);
+void busca(char* inscricao, registro_t** registro, FILE** ponteiro_reg_file){
+
+    if((*ponteiro_reg_file = fopen(REG_FILE, "rb")) == NULL){
+        errorLauncher(1);
+    }
+
+    //TODO Percorrer o arquivo testando as inscrições até achar o registro:
+    *registro = malloc(sizeof(registro_t)); //TODO Acontece apenas se achou.
+
+    printf("%s", inscricao);
 }
 
 int insere(registro_t* registro){
-    printf("----------------------------------------\n");
-    printf("Tamanho: %d \n", (*registro).tam);
-    printf("Inscrição: %s\n", (*registro).inscricao);
-    printf("Nome: %s\n", (*registro).nome);
-    printf("Curso: %s\n", (*registro).curso);
-    printf("Score: %s\n", (*registro).score);
+    registroToString(registro);
     return TRUE;
 }
 
-int removeRegistro(int inscricao){
+int removeRegistro(char* inscricao){
     return TRUE;
 }
