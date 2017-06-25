@@ -64,7 +64,7 @@ void writeLED(int led){
     fseek(reg_file, p_pos, SEEK_SET);
 }
 
-/*Importa os dados do arquivo dados-inline.txt e cria um novo registro_t */
+/*Importa os dados do arquivo dados-inline.txt e cria um novo registro */
 int importar(){
     FILE* data_file;
 
@@ -85,9 +85,6 @@ int importar(){
         while(c != EOF){
             i = 0;
             while((c != PIPE) && (c != EOF)){
-                if(c == ','){
-                    c = '.';
-                }
                 reg[i] = c;
 
                 c = fgetc(data_file);
@@ -140,8 +137,7 @@ int importar(){
     return FALSE;
 }
 
-
-
+/* Procura por um registro. Se encontrado preenche a estrutura passada e coloca o ponteiro do arquivo no inicio do registro */
 void busca(char* inscricao, registro_t* registro){
     short size;
     char* str_registro;
@@ -164,7 +160,7 @@ void busca(char* inscricao, registro_t* registro){
 
                 if(strcmp(pch, inscricao) == 0){ //Verifica se encontrou o registro procurado
 
-                    registro->tam = size;
+                    registro->tam = size - 4;
 
                     int field_size;
 
@@ -192,6 +188,10 @@ void busca(char* inscricao, registro_t* registro){
         }
 
     } while(registro->tam == 0 && (feof(reg_file) == 0));
+
+    if(registro->tam != 0){
+        fseek(reg_file, ((registro->tam + 6)*-1), SEEK_CUR); //Coloca o ponteiro do arquivo no inicio do registro
+    }
 }
 
 int insere(registro_t* registro){
@@ -211,19 +211,6 @@ int insere(registro_t* registro){
     led = getLED();
     if(led == -1){
         fseek(reg_file, 0, SEEK_END);
-<<<<<<< HEAD
-        fwrite(&(registro->tam), sizeof(short), 1, reg_file);
-        fputs(PIPE_STR, reg_file);
-        fputs(registro->inscricao, reg_file);
-        fputs(PIPE_STR, reg_file);
-        fputs(registro->nome, reg_file);
-        fputs(PIPE_STR, reg_file);
-        fputs(registro->curso, reg_file);
-        fputs(PIPE_STR, reg_file);
-        fputs(registro->score, reg_file);
-    }else{
-        //Procurar espaço na LED
-=======
         escreveRegistro(registro);
 
     }
@@ -278,10 +265,11 @@ int insere(registro_t* registro){
                 }
             }
         }
->>>>>>> b2a1ea1eddfa1e6f7716ef5e740036ce8b54765d
     }
 
     registro->tam = registro->tam - 4; //Remove os pipes
+
+    salvaRegistro(TRUE);
 
     return TRUE;
 }
@@ -292,6 +280,7 @@ int removeRegistro(char* inscricao){
 
 void escreveRegistro(registro_t* registro){
     fwrite(&(registro->tam), sizeof(short), 1, reg_file);
+    fputs(PIPE_STR, reg_file);
     fputs(registro->inscricao, reg_file);
     fputs(PIPE_STR, reg_file);
     fputs(registro->nome, reg_file);
@@ -299,5 +288,4 @@ void escreveRegistro(registro_t* registro){
     fputs(registro->curso, reg_file);
     fputs(PIPE_STR, reg_file);
     fputs(registro->score, reg_file);
-    fputs(PIPE_STR, reg_file);
 }
