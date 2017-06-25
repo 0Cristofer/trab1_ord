@@ -23,7 +23,7 @@ void criaRegistro(){
         errorLauncher(1);
     }
 
-    writeLED(-1);
+    writeLED(NO_LED);
 }
 
 /* Efetivamente salva os dados no registro fechado os arquivos */
@@ -195,6 +195,12 @@ void busca(char* inscricao, registro_t* registro){
 }
 
 int insere(registro_t* registro){
+    int led = 0;
+    int last_led = 0;
+    short tam = 0;
+    short new_tam = 0;
+    int next_led = 0;
+
     registroToString(registro);
     registro->tam = registro->tam + 4; //4 pipes
 
@@ -202,8 +208,10 @@ int insere(registro_t* registro){
         criaRegistro();
     }
 
-    if(getLED() == -1){
+    led = getLED();
+    if(led == -1){
         fseek(reg_file, 0, SEEK_END);
+<<<<<<< HEAD
         fwrite(&(registro->tam), sizeof(short), 1, reg_file);
         fputs(PIPE_STR, reg_file);
         fputs(registro->inscricao, reg_file);
@@ -215,6 +223,62 @@ int insere(registro_t* registro){
         fputs(registro->score, reg_file);
     }else{
         //Procurar espaço na LED
+=======
+        escreveRegistro(registro);
+
+    }
+    else{
+        fseek(reg_file, led, SEEK_SET);
+        fread(&tam, sizeof(short), 1, reg_file);
+        while(tam < (registro->tam + 4)){
+            last_led = led;
+
+            fseek(reg_file, led+2, SEEK_SET);
+            fread(&led, sizeof(int), 1, reg_file);
+
+            if(led == -1){
+                break;
+            }
+
+            fseek(reg_file, led, SEEK_SET);
+            fread(&tam, sizeof(short), 1, reg_file);
+        }
+
+        if(led == -1){
+            fseek(reg_file, 0, SEEK_END);
+            escreveRegistro(registro);
+        }
+        else{
+            fseek(reg_file, led, SEEK_SET);
+
+            new_tam = tam - (registro->tam + 4);
+            if(new_tam > 7){
+                new_tam = new_tam - 2;
+                fwrite(&new_tam, sizeof(short), 1, reg_file);
+                fseek(reg_file, new_tam, SEEK_CUR);
+            }
+            else{
+                fseek(reg_file, led+4, SEEK_SET);
+                fread(&next_led, sizeof(int), 1, reg_file);
+                if(last_led == 0){
+                    fseek(reg_file, last_led, SEEK_SET);
+                }
+                else{
+                    fseek(reg_file, last_led+4, SEEK_SET);
+                }
+                fwrite(&next_led, sizeof(int), 1, reg_file);
+                fseek(reg_file, led, SEEK_SET);
+            }
+
+            escreveRegistro(registro);
+            if((new_tam > 0) && (new_tam < 8)){
+                while(new_tam > 0){
+                    fputc(NULL_CHAR, reg_file);
+                    new_tam = new_tam - 1;
+                }
+            }
+        }
+>>>>>>> b2a1ea1eddfa1e6f7716ef5e740036ce8b54765d
     }
 
     registro->tam = registro->tam - 4; //Remove os pipes
@@ -224,4 +288,16 @@ int insere(registro_t* registro){
 
 int removeRegistro(char* inscricao){
     return TRUE;
+}
+
+void escreveRegistro(registro_t* registro){
+    fwrite(&(registro->tam), sizeof(short), 1, reg_file);
+    fputs(registro->inscricao, reg_file);
+    fputs(PIPE_STR, reg_file);
+    fputs(registro->nome, reg_file);
+    fputs(PIPE_STR, reg_file);
+    fputs(registro->curso, reg_file);
+    fputs(PIPE_STR, reg_file);
+    fputs(registro->score, reg_file);
+    fputs(PIPE_STR, reg_file);
 }

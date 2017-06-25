@@ -14,7 +14,10 @@
 #define DATA_FILE "dados-inline.txt"
 #define REG_FILE "registros.dat"
 #define PIPE '|'
+#define NULL_CHAR '#'
 #define PIPE_STR "|"
+#define NULL_REG "*|"
+#define NO_LED -1
 #define HEADER "=== SOORD - Sistema Operacional de Organização e Recuperação de Dados ===\n"
 
 //Variável global
@@ -35,5 +38,6 @@ void writeLED(int led);
 void busca(char* inscricao, registro_t* registro);
 int insere(registro_t* registro);
 int removeRegistro(char* inscricao);
+void escreveRegistro(registro_t* registro);
 
 #endif /* ORD_H */
