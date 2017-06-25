@@ -140,12 +140,58 @@ int importar(){
     return FALSE;
 }
 
-void busca(char* inscricao, registro_t** registro){
 
-    //TODO Percorrer o arquivo testando as inscrições até achar o registro:
-    *registro = malloc(sizeof(registro_t)); //TODO Acontece apenas se achou.
 
-    printf("%s", inscricao);
+void busca(char* inscricao, registro_t* registro){
+    short size;
+    char* str_registro;
+    char* pch;
+    size_t resultado;
+
+    fseek(reg_file, 4, SEEK_SET); //Pula a cabeça da LED
+
+    do{
+        resultado = fread(&size, sizeof(short), 1, reg_file); //Lê o tamanho do registro
+
+        if(resultado > 0){ //Executa apenas se leu o dado
+            str_registro = malloc(sizeof(char) * (size + 1));
+
+            fgets(str_registro, size+1, reg_file); //Lê o registro (size+1 por causa do /0)
+
+            if(str_registro[1] != '*'){ //Verifica se é vazio
+
+                pch = strtok(str_registro,"|");
+
+                if(strcmp(pch, inscricao) == 0){ //Verifica se encontrou o registro procurado
+
+                    registro->tam = size;
+
+                    int field_size;
+
+                    field_size = strlen(pch) + 1;
+                    registro->inscricao = malloc(sizeof(char) * field_size);
+                    strcpy(registro->inscricao, pch);
+
+                    pch = strtok(NULL,"|");
+                    field_size = strlen(pch) + 1;
+                    registro->nome = malloc(sizeof(char) * field_size);
+                    strcpy(registro->nome, pch);
+
+                    pch = strtok(NULL,"|");
+                    field_size = strlen(pch) + 1;
+                    registro->curso = malloc(sizeof(char) * field_size);
+                    strcpy(registro->curso, pch);
+
+                    pch = strtok(NULL,"|");
+                    field_size = strlen(pch) + 1;
+                    registro->score = malloc(sizeof(char) * field_size);
+                    strcpy(registro->score, pch);
+                }
+            }
+            free(str_registro);
+        }
+
+    } while(registro->tam == 0 && (feof(reg_file) == 0));
 }
 
 int insere(registro_t* registro){
@@ -159,6 +205,7 @@ int insere(registro_t* registro){
     if(getLED() == -1){
         fseek(reg_file, 0, SEEK_END);
         fwrite(&(registro->tam), sizeof(short), 1, reg_file);
+        fputs(PIPE_STR, reg_file);
         fputs(registro->inscricao, reg_file);
         fputs(PIPE_STR, reg_file);
         fputs(registro->nome, reg_file);
@@ -166,7 +213,6 @@ int insere(registro_t* registro){
         fputs(registro->curso, reg_file);
         fputs(PIPE_STR, reg_file);
         fputs(registro->score, reg_file);
-        fputs(PIPE_STR, reg_file);
     }else{
         //Procurar espaço na LED
     }

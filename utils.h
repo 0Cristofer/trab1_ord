@@ -12,6 +12,7 @@ int trimString(char** string);
 unsigned int iConfirmar();
 void errorLauncher(int e);
 void registroToString(registro_t* registro);
+void pause();
 
 
 #endif /* UTILS_H */

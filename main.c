@@ -45,11 +45,7 @@ void ajuda(){
 
     printf("\n 5 - Ajuda luciano: Exibe esta tela.\n");
 
-    printf("\nPressione ENTER para voltar ao Menu Principal\n");
-
-    getchar();
-    char aux[10];
-    fgets(aux, 100, stdin);
+    pause();
 }
 
 
@@ -65,17 +61,19 @@ int iImportar(){
     return opt;
 }
 
-void iBuscar(char* inscricao){
+void iBuscar(char** inscricao){
     system("clear");
     printf(HEADER);
     printf("\n----------- Buscar registro -----------\n");
 
     printf(" Insira o número da inscrição para busca: ");
-    scanf(" %[^\n]", inscricao);
-    trimString(&inscricao);
+    *inscricao = malloc(sizeof(char) * 100);
+
+    scanf(" %[^\n]", *inscricao);
+    trimString(inscricao);
 }
 
-void iCadastrar(registro_t** registro){
+void iCadastrar(registro_t* registro){
     system("clear");
     printf(HEADER);
     printf("\n----------- Cadastrar novo registro -----------\n");
@@ -107,12 +105,11 @@ void iCadastrar(registro_t** registro){
     scanf("  %[^\n]", score);
     tam += trimString(&score);
 
-    *registro = malloc(sizeof(registro_t));
-    (*registro)->tam = tam;
-    (*registro)->inscricao = inscricao;
-    (*registro)->nome = nome;
-    (*registro)->curso = curso;
-    (*registro)->score = score;
+    registro->tam = tam;
+    registro->inscricao = inscricao;
+    registro->nome = nome;
+    registro->curso = curso;
+    registro->score = score;
 }
 
 void iRemover1(char* inscricao){
@@ -145,12 +142,13 @@ unsigned int iRemover2(registro_t* registro){
 int main(){
     unsigned int opt, opt2;
 
-    registro_t* registro;
+    registro_t registro;
     char* inscricao;
 
     abreRegistro();
 
     do {
+        registro.tam = 0;
         inscricao = malloc(sizeof(char) * 10);
 
         menuPrincipal();
@@ -164,13 +162,21 @@ int main(){
                 break;
 
             case 2:
-                iBuscar(inscricao);
+                iBuscar(&inscricao);
                 busca(inscricao, &registro);
+                if(registro.tam != 0){
+                    printf("\nRegistro encontrado!\n");
+                    registroToString(&registro);
+                    //TODO free nos ponteiros do registro
+                } else {
+                    printf("\nRegistro não encontrado :(\n");
+                }
+                pause();
                 break;
 
             case 3:
                 iCadastrar(&registro);
-                insere(registro);
+                insere(&registro);
                 break;
 
             case 4:
@@ -179,15 +185,15 @@ int main(){
                     iRemover1(inscricao);
                     busca(inscricao, &registro);
 
-                    if(registro == NULL){
+                    if(registro.tam == 0){
                         printf("Registro %s não encontrado!\nDeseja procurar novamente? (0/1)", inscricao);
                         opt2 = iConfirmar();
 
                     }
-                } while(registro == NULL || opt2 == 1);
+                } while(registro.tam == 0 || opt2 == 1);
 
-                if(registro != NULL){
-                    if(iRemover2(registro)){
+                if(registro.tam == 0){
+                    if(iRemover2(&registro)){
                         removeRegistro(inscricao);
                     }
                 }

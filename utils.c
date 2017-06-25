@@ -68,3 +68,15 @@ void registroToString(registro_t* registro){
     printf("Curso: %s\n",     registro->curso);
     printf("Score: %s\n",     registro->score);
 }
+
+
+/**
+* Função para pausar a execução
+**/
+void pause(){
+    printf("\nPressione ENTER para voltar ao Menu Principal\n");
+
+    getchar();
+    char aux[10];
+    fgets(aux, 100, stdin);
+}

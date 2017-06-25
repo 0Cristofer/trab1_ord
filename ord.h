@@ -32,7 +32,7 @@ void abreRegistro();
 int importar();
 void salvaRegistro(int REOPEN);
 void writeLED(int led);
-void busca(char* inscricao, registro_t** registro);
+void busca(char* inscricao, registro_t* registro);
 int insere(registro_t* registro);
 int removeRegistro(char* inscricao);
 
