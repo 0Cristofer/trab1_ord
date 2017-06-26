@@ -238,10 +238,12 @@ void insere(registro_t* registro){
             fseek(reg_file, led, SEEK_SET);
 
             new_tam = tam - registro->tam;
+            printf("new tam: %d\n", new_tam);
             if(new_tam > 7){
                 new_tam = new_tam - 2;
                 fwrite(&new_tam, sizeof(short), 1, reg_file);
                 fseek(reg_file, new_tam, SEEK_CUR);
+                new_tam = new_tam + 2;
             }
             else{
                 fseek(reg_file, led+4, SEEK_SET);
@@ -257,6 +259,7 @@ void insere(registro_t* registro){
             }
 
             if((new_tam > 0) && (new_tam < 8)){
+                new_tam = new_tam - 2;
                 registro->tam = registro->tam + new_tam;
                 escreveRegistro(registro);
                 while(new_tam > 0){
