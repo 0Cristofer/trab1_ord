@@ -215,14 +215,26 @@ int insere(registro_t* registro){
 
     }
     else{
+        printf("led1: %d\n", led);
+        getc(stdin);
+        getc(stdin);
         fseek(reg_file, led, SEEK_SET);
         fread(&tam, sizeof(short), 1, reg_file);
-        while(tam < (registro->tam + 4)){
+        printf("tam %d\n", tam);
+        getc(stdin);
+        getc(stdin);
+        while(tam < registro->tam){
+            printf("tam %d\n", tam);
+            getc(stdin);
+            getc(stdin);
             last_led = led;
 
             fseek(reg_file, led+2, SEEK_SET);
             fread(&led, sizeof(int), 1, reg_file);
 
+            printf("led2: %d\n", led);
+            getc(stdin);
+            getc(stdin);
             if(led == -1){
                 break;
             }
@@ -238,7 +250,7 @@ int insere(registro_t* registro){
         else{
             fseek(reg_file, led, SEEK_SET);
 
-            new_tam = tam - (registro->tam + 4);
+            new_tam = tam - registro->tam;
             if(new_tam > 7){
                 new_tam = new_tam - 2;
                 fwrite(&new_tam, sizeof(short), 1, reg_file);
@@ -257,12 +269,16 @@ int insere(registro_t* registro){
                 fseek(reg_file, led, SEEK_SET);
             }
 
-            escreveRegistro(registro);
             if((new_tam > 0) && (new_tam < 8)){
+                registro->tam = registro->tam + new_tam;
+                escreveRegistro(registro);
                 while(new_tam > 0){
                     fputc(NULL_CHAR, reg_file);
                     new_tam = new_tam - 1;
                 }
+            }
+            else{
+                escreveRegistro(registro);
             }
         }
     }
@@ -274,7 +290,34 @@ int insere(registro_t* registro){
     return TRUE;
 }
 
-int removeRegistro(char* inscricao){
+int removeRegistro(char* inscricao, registro_t* registro){
+    int offset;
+    int led;
+    short tam;
+    char stro[50];
+    offset = ftell(reg_file);
+    printf("offset %d\n", offset);
+    fread(&tam, sizeof(short), 1, reg_file);
+    fgets(stro, tam+1, reg_file);
+    printf("tam: %d,  reg: %s\n", tam, stro);
+
+    fseek(reg_file, 0, SEEK_SET);
+    fread(&led, sizeof(int), 1, reg_file);
+
+    while(led != -1){
+        fseek(reg_file, led+4, SEEK_SET);
+        fread(&led, sizeof(int), 1, reg_file);
+    }
+
+    fseek(reg_file, -4, SEEK_CUR);
+    fwrite(&offset, sizeof(int), 1, reg_file);
+
+    fseek(reg_file, (offset+2), SEEK_SET);
+    fputs(NULL_REG, reg_file);
+    fwrite(&led, sizeof(int), 1, reg_file);
+
+    salvaRegistro(TRUE);
+
     return TRUE;
 }
 

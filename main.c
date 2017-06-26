@@ -112,7 +112,7 @@ void iCadastrar(registro_t* registro){
     registro->score = score;
 }
 
-void iRemover1(char* inscricao){
+void iRemover1(char** inscricao){
     system("clear");
     printf(HEADER);
     printf("\n-------------- Remoção de registros --------------\n");
@@ -120,8 +120,8 @@ void iRemover1(char* inscricao){
     printf("Para remover um registro, primeiro insira seu número de inscrição.\n ATENÇÃO: Esta ação é permanente.\n");
 
     printf("\nNúmero da inscrição: ");
-    scanf(" %[^\n]", inscricao);
-    trimString(&inscricao);
+    scanf(" %[^\n]", *inscricao);
+    trimString(inscricao);
 }
 
 unsigned int iRemover2(registro_t* registro){
@@ -182,7 +182,8 @@ int main(){
             case 4:
                 opt2 = 0;
                 do{
-                    iRemover1(inscricao);
+                    iRemover1(&inscricao);
+                    printf("insc: %s\n", inscricao);
                     busca(inscricao, &registro);
 
                     if(registro.tam == 0){
@@ -190,11 +191,11 @@ int main(){
                         opt2 = iConfirmar();
 
                     }
-                } while(registro.tam == 0 || opt2 == 1);
+                } while((registro.tam == 0) || (opt2 == 1));
 
-                if(registro.tam == 0){
+                if(registro.tam != 0){
                     if(iRemover2(&registro)){
-                        removeRegistro(inscricao);
+                        removeRegistro(inscricao, &registro);
                     }
                 }
 
