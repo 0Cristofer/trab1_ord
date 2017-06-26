@@ -23,7 +23,7 @@ void menuPrincipal(){
     printf("  2 - Buscar registros\n");
     printf("  3 - Inserir registros\n");
     printf("  4 - Remover registros\n");
-    printf("  5 - Ajuda luciano\n");
+    printf("  5 - Ajuda\n");
     printf("  0 - Sair\n");
     printf("-------------------------------------\n");
 
@@ -167,7 +167,10 @@ int main(){
                 if(registro.tam != 0){
                     printf("\nRegistro encontrado!\n");
                     registroToString(&registro);
-                    //TODO free nos ponteiros do registro
+                    free(registro.inscricao);
+                    free(registro.nome);
+                    free(registro.curso);
+                    free(registro.score);
                 } else {
                     printf("\nRegistro não encontrado :(\n");
                 }

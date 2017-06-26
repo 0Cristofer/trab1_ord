@@ -31,13 +31,13 @@ typedef struct{
     char* score;
 }registro_t;
 
-void abreRegistro();
 int importar();
+void abreRegistro();
 void salvaRegistro(int REOPEN);
 void writeLED(int led);
 void busca(char* inscricao, registro_t* registro);
-int insere(registro_t* registro);
-int removeRegistro(char* inscricao, registro_t* registro);
+void insere(registro_t* registro);
+void removeRegistro(char* inscricao, registro_t* registro);
 void escreveRegistro(registro_t* registro);
 
 #endif /* ORD_H */

@@ -8,7 +8,6 @@
 #include "utils.h"
 
 FILE* reg_file = NULL;
-FILE* led_file = NULL;
 
 /* Abre o arquivo de registros para leitura */
 void abreRegistro(){
@@ -178,7 +177,7 @@ void busca(char* inscricao, registro_t* registro){
                     registro->curso = malloc(sizeof(char) * field_size);
                     strcpy(registro->curso, pch);
 
-                    pch = strtok(NULL,"|");
+                    pch = strtok(NULL,"#|");
                     field_size = strlen(pch) + 1;
                     registro->score = malloc(sizeof(char) * field_size);
                     strcpy(registro->score, pch);
@@ -194,14 +193,14 @@ void busca(char* inscricao, registro_t* registro){
     }
 }
 
-int insere(registro_t* registro){
+/* Insere um registro no arquivo de registros */
+void insere(registro_t* registro){
     int led = 0;
     int last_led = 0;
     short tam = 0;
     short new_tam = 0;
     int next_led = 0;
 
-    registroToString(registro);
     registro->tam = registro->tam + 4; //4 pipes
 
     if(reg_file == NULL){
@@ -215,26 +214,14 @@ int insere(registro_t* registro){
 
     }
     else{
-        printf("led1: %d\n", led);
-        getc(stdin);
-        getc(stdin);
         fseek(reg_file, led, SEEK_SET);
         fread(&tam, sizeof(short), 1, reg_file);
-        printf("tam %d\n", tam);
-        getc(stdin);
-        getc(stdin);
         while(tam < registro->tam){
-            printf("tam %d\n", tam);
-            getc(stdin);
-            getc(stdin);
             last_led = led;
 
-            fseek(reg_file, led+2, SEEK_SET);
+            fseek(reg_file, 2, SEEK_CUR);
             fread(&led, sizeof(int), 1, reg_file);
 
-            printf("led2: %d\n", led);
-            getc(stdin);
-            getc(stdin);
             if(led == -1){
                 break;
             }
@@ -286,20 +273,14 @@ int insere(registro_t* registro){
     registro->tam = registro->tam - 4; //Remove os pipes
 
     salvaRegistro(TRUE);
-
-    return TRUE;
 }
 
-int removeRegistro(char* inscricao, registro_t* registro){
+void removeRegistro(char* inscricao, registro_t* registro){
     int offset;
     int led;
     short tam;
     char stro[50];
     offset = ftell(reg_file);
-    printf("offset %d\n", offset);
-    fread(&tam, sizeof(short), 1, reg_file);
-    fgets(stro, tam+1, reg_file);
-    printf("tam: %d,  reg: %s\n", tam, stro);
 
     fseek(reg_file, 0, SEEK_SET);
     fread(&led, sizeof(int), 1, reg_file);
@@ -317,8 +298,6 @@ int removeRegistro(char* inscricao, registro_t* registro){
     fwrite(&led, sizeof(int), 1, reg_file);
 
     salvaRegistro(TRUE);
-
-    return TRUE;
 }
 
 void escreveRegistro(registro_t* registro){
